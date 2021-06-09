@@ -41,7 +41,9 @@ Check
 */
 func (r *Register) Check() (*RegisterCheckResult, error) {
 	var result = &RegisterCheckResult{
-		Data: &RegisterCheckData{},
+		Data: &RegisterCheckData{
+			// AccessInfo: &AccessInfo{},
+		},
 	}
 	_, err := POST(r.accessToken, "shop/register/check", nil, result)
 	if err != nil {

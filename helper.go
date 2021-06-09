@@ -29,8 +29,8 @@ func buildURL(path string, values url.Values) string {
 	return u.String()
 }
 
-func buildEmptyMap() map[interface{}]interface{} {
-	return map[interface{}]interface{}{}
+func buildEmptyMap() struct{} {
+	return struct{}{}
 }
 
 func POST(accessToken, path string, from interface{}, bind interface{}) (*http.Response, error) {
@@ -38,6 +38,7 @@ func POST(accessToken, path string, from interface{}, bind interface{}) (*http.R
 		from = buildEmptyMap()
 	}
 	u := buildAccessTokenURL(path, accessToken)
+
 	return doHTTP(sling.New().Post, u, from, bind)
 }
 
