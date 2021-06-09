@@ -40,11 +40,7 @@ Check
 如果账户未接入，将返回错误码1040003。
 */
 func (r *Register) Check() (*RegisterCheckResult, error) {
-	var result = &RegisterCheckResult{
-		Data: &RegisterCheckData{
-			// AccessInfo: &AccessInfo{},
-		},
-	}
+	var result = &RegisterCheckResult{}
 	_, err := POST(r.accessToken, "shop/register/check", nil, result)
 	if err != nil {
 		return nil, err
