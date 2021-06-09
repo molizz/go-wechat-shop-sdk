@@ -29,13 +29,13 @@ func buildURL(path string, values url.Values) string {
 	return u.String()
 }
 
-func buildEmptyMap() struct{} {
+func buildEmptyJSONBody() struct{} {
 	return struct{}{}
 }
 
 func POST(accessToken, path string, from interface{}, bind interface{}) (*http.Response, error) {
 	if from == nil {
-		from = buildEmptyMap()
+		from = buildEmptyJSONBody()
 	}
 	u := buildAccessTokenURL(path, accessToken)
 
