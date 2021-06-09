@@ -21,9 +21,13 @@ Upload
 */
 func (i *Img) Upload(uploadFilePath string) (*ImgResult, error) {
 	var result = &ImgResult{}
-	_, err := Upload(i.accessToken, "shop/img/upload", uploadFilePath, result)
+	err := Upload(i.accessToken, "shop/img/upload", uploadFilePath, result)
 	if err != nil {
 		return nil, err
+	}
+
+	if !result.OK() {
+		return nil, result
 	}
 	return result, nil
 }

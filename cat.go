@@ -34,5 +34,8 @@ func (c *Cat) Get() (*GetCatResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !result.OK() {
+		return nil, result
+	}
 	return result, nil
 }

@@ -2,6 +2,8 @@ package shop
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -13,15 +15,17 @@ import (
 	"github.com/dghubble/sling"
 )
 
-func buildURL(p, accessToken string) string {
+func buildAccessTokenURL(path, accessToken string) string {
+	return buildURL(path, url.Values{"access_token": []string{accessToken}})
+}
+
+func buildURL(path string, values url.Values) string {
 	u, err := url.Parse(baseAPI)
 	if err != nil {
 		panic(err)
 	}
-	u.Path = p
-	query := u.Query()
-	query.Add("access_token", accessToken)
-	u.RawQuery = query.Encode()
+	u.Path = path
+	u.RawQuery = values.Encode()
 	return u.String()
 }
 
@@ -33,51 +37,60 @@ func POST(accessToken, path string, from interface{}, bind interface{}) (*http.R
 	if from == nil {
 		from = buildEmptyMap()
 	}
-	return doHTTP(sling.New().Post, accessToken, path, from, bind)
+	u := buildAccessTokenURL(path, accessToken)
+	return doHTTP(sling.New().Post, u, from, bind)
 }
 
 func GET(accessToken, path string, bind interface{}) (*http.Response, error) {
-	return doHTTP(sling.New().Get, accessToken, path, nil, bind)
+	u := buildAccessTokenURL(path, accessToken)
+	return doHTTP(sling.New().Get, u, nil, bind)
 }
 
 type doFunc func(path string) *sling.Sling
 
-func doHTTP(do doFunc, accessToken, path string, from interface{}, bind interface{}) (*http.Response, error) {
-	return do(buildURL(accessToken, path)).
+func doHTTP(do doFunc, u string, from interface{}, bind interface{}) (*http.Response, error) {
+	return do(u).
 		BodyJSON(from).
 		ReceiveSuccess(bind)
 }
 
-func Upload(accessToken, apiPath, uploadFilePath string, bind interface{}) (*http.Response, error) {
+func Upload(accessToken, apiPath, uploadFilePath string, bind interface{}) error {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	do := sling.New().Post
 
 	file, err := os.Open(uploadFilePath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer file.Close()
 
-	part1, err := writer.CreateFormFile("media", filepath.Base(uploadFilePath))
-	_, err = io.Copy(part1, file)
+	media, err := writer.CreateFormFile("media", filepath.Base(uploadFilePath))
+	_, err = io.Copy(media, file)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = writer.Close()
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	req, err := do(buildURL(accessToken, apiPath)).Request()
-	if err != nil {
-		return nil, err
-	}
-	req.Body = io.NopCloser(payload)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	c := &http.Client{
 		Timeout: 60 * time.Second,
 	}
-	return c.Do(req)
+	req, err := http.NewRequest("POST", buildAccessTokenURL(apiPath, accessToken), payload)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(resp.Status)
+	}
+
+	return json.NewDecoder(resp.Body).Decode(bind)
 }
