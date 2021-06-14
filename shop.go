@@ -1,5 +1,9 @@
 package shop
 
+/*
+错误码： https://developers.weixin.qq.com/miniprogram/dev/framework/ministore/minishopopencomponent2/API/errorcode.html
+*/
+
 const (
 	baseAPI = "https://api.weixin.qq.com"
 )
@@ -34,4 +38,20 @@ func (s *Shop) Cat() *Cat {
 
 func (s *Shop) Img() *Img {
 	return NewImg(s.accessToken)
+}
+
+func (s *Shop) Spu() *Spu {
+	return NewSpu(s.accessToken)
+}
+
+func (s *Shop) Order() *Order {
+	return NewOrder(s.accessToken)
+}
+
+func (s *Shop) Delivery() *Delivery {
+	return NewDelivery(s.accessToken)
+}
+
+func (s *Shop) Aftersale() *Aftersale {
+	return NewAftersale(s.accessToken)
 }
