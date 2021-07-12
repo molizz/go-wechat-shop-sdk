@@ -193,14 +193,14 @@ func (p *SpuProductsResult) Seek(f func(*SpuProduct) error) error {
 }
 
 type SpuProductGetList struct {
-	Status          int    `json:"status"`            // 选填，不填时获取所有状态商品
-	StartCreateTime string `json:"start_create_time"` // 选填，与end_create_time成对
-	EndCreateTime   string `json:"end_create_time"`   // 选填，与start_create_time成对
-	StartUpdateTime string `json:"start_update_time"` // 选填，与end_update_time成对
-	EndUpdateTime   string `json:"end_update_time"`   // 选填，与start_update_time成对
-	Page            int    `json:"page"`              //
-	PageSize        int    `json:"page_size"`         // 不超过100
-	NeedEditSpu     int    `json:"need_edit_spu"`     // 默认0:获取线上数据, 1:获取草稿数据
+	Status          int    `json:"status"`                      // 选填，不填时获取所有状态商品
+	StartCreateTime string `json:"start_create_time,omitempty"` // 选填，与end_create_time成对
+	EndCreateTime   string `json:"end_create_time,omitempty"`   // 选填，与start_create_time成对
+	StartUpdateTime string `json:"start_update_time,omitempty"` // 选填，与end_update_time成对
+	EndUpdateTime   string `json:"end_update_time,omitempty"`   // 选填，与start_update_time成对
+	Page            int    `json:"page"`                        //
+	PageSize        int    `json:"page_size"`                   // 不超过100
+	NeedEditSpu     int    `json:"need_edit_spu"`               // 默认0:获取线上数据, 1:获取草稿数据
 }
 
 /*
