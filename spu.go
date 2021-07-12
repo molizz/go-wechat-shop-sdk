@@ -26,6 +26,7 @@ type SpuAddResult struct {
 }
 
 type SpuProduct struct {
+	ProductID         int      `json:"product_id"`
 	OutProductID      string   `json:"out_product_id"`
 	Title             string   `json:"title"`
 	Path              string   `json:"path"`
@@ -37,6 +38,10 @@ type SpuProduct struct {
 	} `json:"desc_info,omitempty"`
 	ThirdCatID  int     `json:"third_cat_id"`
 	BrandID     int     `json:"brand_id"`
+	Status      int     `json:"status"`
+	EditStatus  int     `json:"edit_status"`
+	CreateTime  string  `json:"create_time"`
+	UpdateTime  string  `json:"update_time"`
 	InfoVersion *string `json:"info_version,omitempty"`
 	Skus        []struct {
 		OutProductID string  `json:"out_product_id"`
